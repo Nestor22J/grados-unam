@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula Virtual | UNAM</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/notifications.css">
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="brand-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="../img/logo.png" alt="UNAM" style="height: 45px; width: auto; margin-right: 8px;">
+                <span>UNAM</span>
+            </div>
+            <div class="app-version">
+                <span>Panel Administrativo</span>
+            </div>
+        </div>
+        <div class="header-right">
+             <div class="header-actions">
+                 <!-- Notification Bell -->
+                 <div class="notification-wrapper">
+                     <i class="ri-notification-3-line notification-icon" id="btn-notifications"></i>
+                     <span class="badge-count">0</span>
+                     <!-- Dropdown -->
+                     <div class="notification-dropdown hidden" id="notification-dropdown">
+                        <div class="notif-header">
+                            <div class="notif-title">Notificaciones</div>
+                            <div class="notif-filters">
+                                <span class="filter-pill active" id="filter-all">Todas</span>
+                                <span class="filter-pill" id="filter-unread">No leídas</span>
+                            </div>
+                        </div>
+                        <div class="notif-list" id="notif-list">
+                            <!-- Items -->
+                        </div>
+                     </div>
+                 </div>
+            </div>
+
+            <div class="user-nav">
+                <span id="current-user-name">Usuario</span>
+                <i class="ri-account-circle-line"></i>
+                <i class="ri-logout-box-r-line" id="btn-logout" style="cursor: pointer;" title="Cerrar Sesión"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Student Menu Items -->
+            <a href="student-requests.html" class="nav-item">
+                <i class="ri-file-list-3-line"></i>
+                <span>Solicitudes</span>
+            </a>
+            <a href="student-advisors.html" class="nav-item">
+                <i class="ri-user-star-line"></i>
+                <span>Asesores</span>
+            </a>
+            <a href="student-kanban.html" class="nav-item student-only">
+                <i class="ri-artboard-line"></i>
+                <span>Tablero / Avance</span>
+            </a>
+            <a href="chat.html" class="nav-item student-only">
+                <i class="ri-chat-1-line"></i>
+                <span>Mensajes</span>
+            </a>
+
+            <!-- School Menu Items -->
+            <a href="school-requests.html" class="nav-item">
+                <i class="ri-inbox-archive-line"></i>
+                <span>Solicitudes Recibidas</span>
+            </a>
+
+            <!-- Advisor Menu Items -->
+            <a href="advisor-availability.html" class="nav-item advisor-only">
+                <i class="ri-calendar-check-line"></i>
+                <span>Disponibilidad</span>
+            </a>
+            <a href="advisor-requests.html" class="nav-item advisor-only">
+                <i class="ri-file-text-line"></i>
+                <span>Solicitudes / Cartas</span>
+            </a>
+            <a href="advisor-kanban.html" class="nav-item advisor-only">
+                <i class="ri-artboard-line"></i>
+                <span>Tablero / Avance</span>
+            </a>
+            <a href="chat.html" class="nav-item advisor-only">
+                <i class="ri-chat-1-line"></i>
+                <span>Mensajes</span>
+            </a>
+
+            <!-- Admin Menu Items -->            <a href="schools.html" class="nav-item">
+                <i class="ri-building-line"></i>
+                <span>Escuelas</span>
+            </a>
+            <a href="jurados.html" class="nav-item">
+                <i class="ri-scales-3-line"></i>
+                <span>Jurados</span>
+            </a>
+            <a href="advisors.html" class="nav-item">
+                <i class="ri-user-star-line"></i>
+                <span>Gestionar Asesores</span>
+            </a>
+            <a href="students.html" class="nav-item">
+                <i class="ri-group-line"></i>
+                <span>Estudiantes</span>
+            </a>
+            <a href="admin.html" class="nav-item">
+                <i class="ri-admin-line"></i>
+                <span>Admin</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Welcome Section -->
+            <section class="welcome-card" style="height: 400px; justify-content: center; flex-direction: column; text-align: center;">
+                <div class="welcome-image" style="margin-bottom: 2rem;">
+                    <i class="ri-admin-line" style="font-size: 8rem; color: #1a237e;"></i>
+                </div>
+                <div class="welcome-user" style="text-align: center;">
+                    <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Bienvenido al Panel de Control</h2>
+                    <h3 id="welcome-user-name" style="font-size: 1.8rem; color: #333; font-weight: 400;">Administrador</h3>
+                    <p style="margin-top: 1rem; color: #666;">Selecciona una opción del menú para comenzar.</p>
+                </div>
+            </section>
+
+            <!-- Student Module (Hidden by default, shown via JS for students) -->
+            <section id="student-module" class="crud-section hidden">
+                <div class="crud-header">
+                    <div class="crud-title">
+                        <i class="ri-book-open-line"></i>
+                        <span>Mis Cursos Matriculados</span>
+                    </div>
+                    <button id="btn-add-course" class="btn-primary">
+                        <i class="ri-add-line"></i>
+                        <span>Inscribir Curso</span>
+                    </button>
+                </div>
+
+                <div class="content-grid" id="courses-container">
+                    <!-- Cards Injected via JS -->
+                </div>
+                
+                <div id="empty-state" class="empty-state hidden" style="text-align:center; padding: 2rem;">
+                    <i class="ri-booklet-line" style="font-size: 3rem; color: #ccc;"></i>
+                    <p style="color: #666;">No tienes cursos inscritos.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modal for Courses -->
+    <div id="course-modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="course-modal-title">Inscribir Curso</h2>
+                <button id="course-modal-close" style="background:none; border:none; cursor:pointer;"><i class="ri-close-line" style="font-size:1.5rem;"></i></button>
+            </div>
+            <form id="course-form">
+                <input type="hidden" id="course-index">
+                
+                <div class="form-group">
+                    <label>Nombre del Curso</label>
+                    <input type="text" id="course-name" placeholder="Ej. Matemáticas I" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Docente</label>
+                    <input type="text" id="course-teacher" placeholder="Ej. Dr. Ramirez" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Horario</label>
+                    <input type="text" id="course-schedule" placeholder="Ej. Lun-Mie 10:00 AM" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btn-course-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Modal (Reused) -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Nuevo Item</h2>
+                <button id="modal-close" style="background:none; border:none; cursor:pointer;"><i class="ri-close-line" style="font-size:1.5rem;"></i></button>
+            </div>
+            <form id="crud-form">
+                <input type="hidden" id="item-id">
+                
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="item-title" placeholder="Nombre del curso o tarea" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="item-desc" rows="3" placeholder="Detalles..." required></textarea>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:15px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>Categoría</label>
+                        <select id="item-category">
+                            <option value="design">Académico</option>
+                            <option value="dev">Trámitres</option>
+                            <option value="marketing">Extra</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Estado</label>
+                        <select id="item-status">
+                            <option value="activo">Activo</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="finalizado">Finalizado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span id="toast-msg">Operación exitosa</span>
+    </div>
+
+    <script src="../js/notifications.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/student-logic.js"></script>
+    <script src="../js/advisor-logic.js"></script>
+</body>
+</html>
+

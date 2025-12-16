@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes Recibidas | UNAM</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/notifications.css">
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="brand-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="../img/logo.png" alt="UNAM" style="height: 45px; width: auto; margin-right: 8px;">
+                <span>UNAM</span>
+            </div>
+            <div class="app-version">
+                <span>Panel de Escuela</span>
+            </div>
+        </div>
+        <div class="header-right">
+             <div class="header-actions">
+                 <!-- Notification Bell -->
+                 <div class="notification-wrapper">
+                     <i class="ri-notification-3-line notification-icon" id="btn-notifications"></i>
+                     <span class="badge-count">0</span>
+                     <!-- Dropdown -->
+                     <div class="notification-dropdown hidden" id="notification-dropdown">
+                        <div class="notif-header">
+                            <div class="notif-title">Notificaciones</div>
+                            <div class="notif-filters">
+                                <span class="filter-pill active" id="filter-all">Todas</span>
+                                <span class="filter-pill" id="filter-unread">No leídas</span>
+                            </div>
+                        </div>
+                        <div class="notif-list" id="notif-list"></div>
+                     </div>
+                 </div>
+            </div>
+            <div class="user-nav">
+                <span id="current-user-name">Escuela</span>
+                <i class="ri-account-circle-line"></i>
+                <i class="ri-logout-box-r-line" id="btn-logout" style="cursor: pointer;" title="Cerrar Sesión"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="school-requests.html" class="nav-item active">
+                <i class="ri-inbox-archive-line"></i>
+                <span>Solicitudes Recibidas</span>
+            </a>
+
+            <!-- Admin Links (Hidden by app.js for schools) -->
+            <a href="schools.html" class="nav-item">
+                <i class="ri-building-line"></i>
+                <span>Escuelas</span>
+            </a>
+            <a href="jurados.html" class="nav-item">
+                <i class="ri-scales-3-line"></i>
+                <span>Jurados</span>
+            </a>
+            <a href="advisors.html" class="nav-item">
+                <i class="ri-user-star-line"></i>
+                <span>Gestionar Asesores</span>
+            </a>
+            <a href="students.html" class="nav-item">
+                <i class="ri-group-line"></i>
+                <span>Estudiantes</span>
+            </a>
+            <a href="admin.html" class="nav-item">
+                <i class="ri-admin-line"></i>
+                <span>Admin</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <section class="welcome-card" style="margin-bottom: 2rem;">
+                <div class="welcome-user">
+                    <h2>Bandeja de Solicitudes</h2>
+                    <p>Gestiona los trámites enviados por los estudiantes.</p>
+                </div>
+            </section>
+
+            <!-- Requests List Module -->
+            <section class="crud-section">
+                <div class="crud-header">
+                    <div class="crud-title">
+                        <i class="ri-file-text-line"></i>
+                        <span>Solicitudes Pendientes</span>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard (Cards View) -->
+                <div class="content-grid" id="main-dashboard-view">
+                    <!-- Master Card Injected via JS -->
+                </div>
+
+                <!-- Applicants List View (Hidden initially) -->
+                <div id="applicants-view" class="hidden" style="margin-top: 20px;">
+                    <div class="controls-bar" style="margin-bottom: 15px;">
+                        <button class="btn-secondary" id="btn-back-dashboard" style="display: flex; align-items: center; gap: 5px;">
+                            <i class="ri-arrow-left-line"></i> Volver
+                        </button>
+                        <h3 style="margin: 0; color: #1a237e;" id="list-title">Solicitantes</h3>
+                    </div>
+                    
+                    <div class="list-container" id="applicants-list-container">
+                        <!-- Table Injected via JS -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- FUT Model (Read Only for School) -->
+    <div id="fut-modal-overlay" class="modal-overlay hidden">
+        <div class="modal" style="max-width: 800px; width: 95%;">
+            <div class="modal-header">
+                <h2 id="modal-title" style="font-size: 1.1rem; color: #1a237e;">Detalle de la Solicitud</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="action-btn edit" id="btn-modal-approve" title="Es Apto" style="background:#e8f5e9; color:#2e7d32; border:none; padding: 5px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">
+                        <i class="ri-check-line"></i> Es Apto
+                    </button>
+                    <button class="action-btn delete" id="btn-modal-observe" title="Observar" style="background:#ffebee; color:#c62828; border:none; padding: 5px 10px; border-radius:4px; font-weight:bold; cursor:pointer;">
+                        <i class="ri-close-line"></i> Observar
+                    </button>
+                    <button id="fut-modal-close" style="background:none; border:none; cursor:pointer;"><i class="ri-close-line" style="font-size:1.5rem;"></i></button>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px; background: #e3f2fd; padding: 10px; border-radius: 4px; color: #0d47a1; font-size: 0.9rem;">
+                <i class="ri-information-line"></i> Revisión de solicitud recibida.
+            </div>
+
+            <!-- FUT Form Structure (Replicated) -->
+            <div class="fut-container" style="border: 2px solid #333; padding: 20px; font-family: Arial, sans-serif; font-size: 0.8rem; overflow-y: auto; max-height: 65vh; background: #f9f9f9;">
+                
+                 <!-- ENTITY HEADER -->
+                <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 15px;">
+                    <img src="../img/logo.png" alt="UNAM" style="height: 50px;">
+                    <div style="flex: 1; text-align: center; font-weight: bold; font-size: 1.2rem;">
+                        FORMULARIO ÚNICO DE TRÁMITE (FUT)
+                    </div>
+                </div>
+
+                <!-- I. SOLICITO -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #e0e0e0; padding: 4px; border: 1px solid #333; font-weight: bold; border-bottom: none;">I. SOLICITO:</div>
+                    <textarea id="fut-solicito" readonly style="width: 100%; border: 1px solid #333; padding: 5px; height: 40px; resize: none; background: #fff;"></textarea>
+                </div>
+
+                <!-- II. DEPENDENCIA -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #e0e0e0; padding: 4px; border: 1px solid #333; font-weight: bold; border-bottom: none;">II. DEPENDENCIA O AUTORIDAD A QUIEN SE DIRIGE LA SOLICITUD:</div>
+                    <input type="text" id="fut-dependencia" readonly style="width: 100%; border: 1px solid #333; padding: 5px; background: #fff;">
+                </div>
+
+                <!-- III. DERECHO DE TRÁMITE -->
+                <div style="margin-bottom: 10px; border: 1px solid #333;">
+                    <div style="background: #e0e0e0; padding: 4px; font-weight: bold; border-bottom: 1px solid #333;">III. DERECHO DE TRÁMITE (opcional)</div>
+                    <div style="display: flex;">
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="padding: 2px; text-align: center; font-size: 0.7rem;">N° COMPROBANTE DE PAGO</div>
+                            <input type="text" readonly style="width: 100%; border:none; border-top: 1px solid #333; padding: 5px; background: #fff;">
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="padding: 2px; text-align: center; font-size: 0.7rem;">FECHA DE PAGO</div>
+                            <input type="date" readonly style="width: 100%; border:none; border-top: 1px solid #333; padding: 5px; background: #fff;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IV. DATOS DEL SOLICITANTE -->
+                <div style="margin-bottom: 10px; border: 1px solid #333;">
+                    <div style="background: #e0e0e0; padding: 4px; font-weight: bold; border-bottom: 1px solid #333;">IV. DATOS DEL SOLICITANTE:</div>
+                    
+                    <!-- PERSONA NATURAL -->
+                    <div style="background: #f5f5f5; padding: 2px 4px; font-weight: bold; border-bottom: 1px solid #333;">PERSONA NATURAL</div>
+                    <div style="display: flex; border-bottom: 1px solid #333;">
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">Apellido Paterno</div>
+                            <input type="text" id="fut-paterno" readonly style="width:100%; border:none; border-top:1px solid #333; padding:2px; background: #fff;">
+                        </div>
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">Apellido Materno</div>
+                            <input type="text" id="fut-materno" readonly style="width:100%; border:none; border-top:1px solid #333; padding:2px; background: #fff;">
+                        </div>
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">Nombres</div>
+                            <input type="text" id="fut-nombres" readonly style="width:100%; border:none; border-top:1px solid #333; padding:2px; background: #fff;">
+                        </div>
+                        <div style="flex: 1; padding: 2px;">
+                            <div style="font-size: 0.7rem; text-align: center; margin-bottom: 2px;">DOCUMENTO DE IDENTIDAD</div>
+                            <div style="display: flex; justify-content: space-around; font-size: 0.7rem;">
+                                <span>DNI <input type="radio" checked disabled></span>
+                                <span>CE <input type="radio" disabled></span>
+                            </div>
+                            <input type="text" id="fut-dni" readonly style="width:100%; margin-top: 2px; border: 1px solid #ccc; background: #fff;">
+                        </div>
+                    </div>
+
+                    <!-- PERSONA JURIDICA -->
+                    <div style="background: #f5f5f5; padding: 2px 4px; font-weight: bold; border-bottom: 1px solid #333;">PERSONA JURÍDICA (opcional)</div>
+                    <div style="display: flex; border-bottom: 1px solid #333;">
+                         <div style="flex: 3; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem;">Razón Social</div>
+                            <input type="text" readonly style="width:100%; border:none; border-top:1px solid #ccc; padding:2px; background: #eee;">
+                         </div>
+                         <div style="flex: 1; padding: 2px;">
+                            <div style="font-size: 0.7rem;">RUC</div>
+                            <input type="text" readonly style="width:100%; border:1px solid #ccc; padding:2px; background: #eee;">
+                         </div>
+                    </div>
+
+                    <!-- REPRESENTANTE LEGAL -->
+                     <div style="border-bottom: 1px solid #333; padding: 2px;">
+                        <div style="font-size: 0.7rem; font-weight: bold;">REPRESENTANTE LEGAL (opcional)</div>
+                     </div>
+                     <div style="display: flex;">
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">Apellidos y Nombres</div>
+                            <input type="text" readonly style="width:100%; border:none; border-top:1px solid #333; padding:2px; background: #eee;">
+                        </div>
+                        <div style="flex: 0.5; padding: 2px;">
+                             <div style="font-size: 0.7rem; text-align: center;">DNI</div>
+                             <input type="text" readonly style="width:100%; border:1px solid #ccc; padding:2px; background: #eee;">
+                        </div>
+                     </div>
+                </div>
+                
+                <!-- V. DIRECCION -->
+                <!-- omitted for brevity or can add if critical, simpler version for detail view -->
+
+                <!-- VII. DOCUMENTOS -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #e0e0e0; padding: 4px; border: 1px solid #333; font-weight: bold; border-bottom: none;">VII. DOCUMENTOS ADJUNTOS:</div>
+                    <div style="border: 1px solid #333; padding: 10px;">
+                        <ul style="font-size: 0.8rem; padding-left: 20px;">
+                            <li>Fotografías: <span style="color: #2e7d32;">Adjunto <i class="ri-check-line"></i></span></li>
+                            <li>Constancias de Prácticas: <span style="color: #2e7d32;">Adjunto <i class="ri-check-line"></i></span></li>
+                            <li>Certificado de Inglés: <span style="color: #2e7d32;">Adjunto <i class="ri-check-line"></i></span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- VIII. FIRMA -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #e0e0e0; padding: 4px; border: 1px solid #333; font-weight: bold; border-bottom: none;">VIII. FIRMA DEL SOLICITANTE:</div>
+                    <div style="border: 1px solid #333; padding: 10px; display: flex; flex-direction: column; gap: 5px;">
+                         <div style="padding: 10px; background: #f0f0f0; text-align: center; border: 1px dashed #999;">
+                            <i class="ri-file-search-line"></i> Ver Firma Adjunta
+                         </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Advisor Designation -->
+    <div id="designation-modal-overlay" class="modal-overlay hidden">
+        <div class="modal" style="max-width: 500px; width: 95%;">
+            <div class="modal-header">
+                <h2 style="font-size: 1.1rem; color: #1a237e;">Designar Asesor</h2>
+                <button id="designation-modal-close" style="background:none; border:none; cursor:pointer;"><i class="ri-close-line" style="font-size:1.5rem;"></i></button>
+            </div>
+            
+            <div style="padding: 20px;">
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">
+                    Seleccione el asesor para el proyecto de tesis. Se enviará una notificación (carta) al docente seleccionado.
+                </p>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 500; font-size: 0.85rem; margin-bottom: 5px;">Estudiante</label>
+                    <input type="text" id="des-student" readonly style="width: 100%; padding: 8px; background: #f5f5f5; border: 1px solid #ddd; color: #555;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 500; font-size: 0.85rem; margin-bottom: 5px;">Asesor Docente</label>
+                    <div style="display: flex; gap: 5px;">
+                        <select id="des-advisor-select" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">-- Seleccionar Docente --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 500; font-size: 0.85rem; margin-bottom: 5px;">Tema / Proyecto</label>
+                    <textarea id="des-topic" placeholder="Ingrese el título del proyecto de tesis..." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; height: 80px; resize: none;"></textarea>
+                </div>
+                
+                <!-- Preview Card -->
+                <div style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 15px;">
+                    <span style="font-size: 0.75rem; color: #999; font-weight: bold; text-transform: uppercase;">Vista Previa de la Carta/Notificación</span>
+                    <div class="card" style="margin-top: 10px; border-left: 4px solid #00695c; pointer-events: none; transform: scale(0.95); transform-origin: left top;">
+                        <div class="card-header">
+                            <span class="card-badge badge-design" style="background: #e0f2f1; color: #00695c;">Trámite</span>
+                            <i class="ri-arrow-right-line" style="color: #ccc;"></i>
+                        </div>
+                        <h3 class="card-title">Propuesta / Designación de Asesor</h3>
+                        <p class="card-desc" style="font-size: 0.8rem;">
+                            Solicita la designación de un asesor o propón uno para tu proyecto.
+                        </p>
+                        <div class="card-footer" style="margin-top: 5px;">
+                            <div class="status-indicator">
+                                <span class="status-dot" style="background: #ffd700;"></span>
+                                <span>Disponible</span> <!-- Static preview text -->
+                            </div>
+                            <button class="btn-primary" style="padding: 4px 10px; font-size: 0.7rem;">Iniciar</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="btn-des-cancel">Cancelar</button>
+                <button type="button" class="btn-primary" id="btn-des-submit">Enviar Carta</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal for Observations -->
+    <div id="obs-modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Registrar Observación</h2>
+                <button id="obs-modal-close" style="background:none; border:none; cursor:pointer;"><i class="ri-close-line" style="font-size:1.5rem;"></i></button>
+            </div>
+            <div style="padding: 20px;">
+                <p style="margin-bottom: 10px; font-size: 0.9rem;">Detalle las observaciones encontradas en la solicitud:</p>
+                <textarea id="obs-text" style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ccc; resize: none;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="btn-obs-cancel">Cancelar</button>
+                <button type="button" class="btn-primary" id="btn-obs-submit">Enviar Observación</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span id="toast-msg">Operación exitosa</span>
+    </div>
+
+    <script src="../js/notifications.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/school-logic.js"></script>
+</body>
+</html>
+

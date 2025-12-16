@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero Kanban | Estudiante UNAM</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/kanban.css">
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="brand-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="../img/logo.png" alt="UNAM" style="height: 45px; width: auto; margin-right: 8px;">
+                <span>UNAM</span>
+            </div>
+            <div class="app-version">
+                <span>Panel del Estudiante</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-nav">
+                <span id="current-user-name">Estudiante</span>
+                <i class="ri-account-circle-line"></i>
+                <i class="ri-logout-box-r-line" id="btn-logout" style="cursor: pointer;" title="Cerrar Sesión"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <a href="student-requests.html" class="nav-item">
+                <i class="ri-file-list-3-line"></i>
+                <span>Solicitudes</span>
+            </a>
+            <a href="student-advisors.html" class="nav-item">
+                <i class="ri-user-star-line"></i>
+                <span>Asesores</span>
+            </a>
+            <a href="student-kanban.html" class="nav-item active">
+                <i class="ri-artboard-line"></i>
+                <span>Tablero / Avance</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i class="ri-chat-1-line"></i>
+                <span>Mensajes</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <section class="welcome-card" style="margin-bottom: 2rem; border-top-color: #2196f3;">
+                <div class="welcome-user">
+                    <h2 style="color: #1976d2;">Tablero de Avance</h2>
+                    <p>Gestiona las tareas y el progreso de tu tesis.</p>
+                </div>
+            </section>
+
+            <!-- Access Warning (Hidden by default) -->
+            <div id="no-advisor-warning" class="empty-state hidden" style="text-align: center; padding: 4rem 2rem; background: white; border-radius: 8px; margin-top: 2rem;">
+                 <i class="ri-lock-2-line" style="font-size: 4rem; color: #ff9800; margin-bottom: 1rem; display: block;"></i>
+                 <h3 style="color: #333; margin-bottom: 10px;">Acceso Restringido</h3>
+                 <p style="color: #666; font-size: 1.1rem; max-width: 500px; margin: 0 auto;">
+                     Aún no tienes un asesor de tesis designado y aprobado. <br>
+                     Esta sección estará disponible una vez que completes el trámite de designación.
+                 </p>
+                 <button onclick="window.location.href='student-requests.html'" class="btn-primary" style="margin-top: 20px;">
+                     Ir a Trámites
+                 </button>
+            </div>
+
+            <!-- Kanban Board -->
+            <div class="kanban-board" id="kanban-board-container">
+                
+                <!-- Todo Column -->
+                <div class="kanban-column" id="col-todo">
+                    <div class="kanban-header todo">
+                        <span>Por Hacer</span>
+                        <button class="add-task-btn" data-col="todo" title="Agregar Tarea"><i class="ri-add-line"></i></button>
+                    </div>
+                    <div class="kanban-tasks" id="tasks-todo">
+                        <!-- Tasks go here -->
+                    </div>
+                </div>
+
+                <!-- In Progress Column -->
+                <div class="kanban-column" id="col-progress">
+                    <div class="kanban-header progress">
+                        <span>En Progreso</span>
+                        <button class="add-task-btn" data-col="progress" title="Agregar Tarea"><i class="ri-add-line"></i></button>
+                    </div>
+                    <div class="kanban-tasks" id="tasks-progress">
+                    </div>
+                </div>
+
+                <!-- Review Column -->
+                <div class="kanban-column" id="col-review">
+                    <div class="kanban-header review">
+                        <span>En Revisión</span>
+                        <button class="add-task-btn" data-col="review" title="Agregar Tarea"><i class="ri-add-line"></i></button>
+                    </div>
+                    <div class="kanban-tasks" id="tasks-review">
+                    </div>
+                </div>
+
+                <!-- Done Column -->
+                <div class="kanban-column" id="col-done">
+                    <div class="kanban-header done">
+                        <span>Hecho</span>
+                        <button class="add-task-btn" data-col="done" title="Agregar Tarea"><i class="ri-add-line"></i></button>
+                    </div>
+                    <div class="kanban-tasks" id="tasks-done">
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Task Modal -->
+    <div id="task-modal" class="modal-overlay hidden">
+        <div class="modal-content large">
+            
+            <!-- Left: Details -->
+            <div class="modal-left">
+                <h3 style="margin-bottom: 20px;">Detalles de la Tarea</h3>
+                
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="task-title" class="form-control" placeholder="Título de la tarea">
+                </div>
+
+                <div class="form-group">
+                    <label>Prioridad</label>
+                    <select id="task-priority" class="form-control">
+                        <option value="low">Baja</option>
+                        <option value="medium" selected>Media</option>
+                        <option value="high">Alta</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-top: 30px;">
+                    <label style="display: flex; justify-content: space-between;">
+                        Archivos Adjuntos
+                        <span style="font-size: 0.75rem; color: #999; font-weight: normal;">(Simulación PDF)</span>
+                    </label>
+                    <div class="attachment-list" id="task-files">
+                        <!-- JS injected -->
+                    </div>
+                    <label class="btn-upload-label">
+                        <i class="ri-upload-cloud-line"></i> Subir PDF
+                        <input type="file" id="task-file-input" accept=".pdf" style="display: none;">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Right: Activity -->
+            <div class="modal-right">
+                <div class="section-title">Comentarios y Actividad</div>
+                
+                <div class="comment-list" id="task-comments">
+                    <div style="text-align: center; color: #999; margin-top: 20px;">No hay comentarios aún.</div>
+                </div>
+
+                <div class="comment-input-area">
+                    <input type="text" id="task-comment-input" placeholder="Escribe un comentario...">
+                    <button class="btn-primary" id="btn-post-comment" style="padding: 0 15px;"><i class="ri-send-plane-fill"></i></button>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="close-task-modal">Cerrar</button>
+                    <button class="btn-primary" id="save-task-btn">Guardar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/kanban.js"></script>
+    <script>
+        // Init Check
+        const currentUser = JSON.parse(localStorage.getItem('nexus_current_user'));
+        if(!currentUser) window.location.href = 'login.html';
+        document.getElementById('current-user-name').textContent = currentUser.name;
+
+        // Access Control: Must have approved Advisor
+        let allRequests = JSON.parse(localStorage.getItem('nexus_requests')) || [];
+        
+        // AUTO-FIX: Ensure Superuser has connection
+        if ((currentUser.user === 'superuser' || currentUser.code === '2020123456') && !allRequests.some(r => r.studentCode === currentUser.code && r.type === 'Designación de Asesor')) {
+             console.log("Seeding superuser advisor connection...");
+             const seedReq = {
+                id: 'REQ-SUPER-SEED',
+                type: 'Designación de Asesor',
+                status: 'approved',
+                studentId: currentUser.user,
+                studentCode: currentUser.code || '2020123456',
+                studentName: currentUser.name,
+                date: new Date().toISOString(),
+                designation: {
+                    advisorId: 'superac',
+                    advisorName: 'Super Asesor'
+                }
+             };
+             allRequests.push(seedReq);
+             localStorage.setItem('nexus_requests', JSON.stringify(allRequests));
+        }
+
+        const hasApprovedAdvisor = allRequests.some(r => 
+            (r.studentId === (currentUser.code || currentUser.user) || r.studentCode === (currentUser.code || currentUser.user)) && 
+            r.type === 'Designación de Asesor' && 
+            r.status === 'approved'
+        );
+
+        const boardContainer = document.getElementById('kanban-board-container');
+        const warningContainer = document.getElementById('no-advisor-warning');
+
+        if (!hasApprovedAdvisor) {
+            // Show Warning, Hide Board
+            if(boardContainer) boardContainer.style.display = 'none';
+            if(warningContainer) warningContainer.classList.remove('hidden');
+        } else {
+            // Show Board (Warning Hidden by default)
+            if(boardContainer) boardContainer.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNAM | Aula Virtual Login</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css"> <!-- Base reset -->
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body class="login-body">
+    
+    <div class="login-container">
+        <!-- Login Card -->
+        <div class="login-card">
+            <div class="logo-container">
+                <img src="../img/logo.png" alt="UNAM" class="logo-img">
+            </div>
+            <div class="university-text">
+                Universidad Nacional de Moquegua
+            </div>
+            
+            <h2 class="login-heading">Sistema de Gestión de Grados y Títulos</h2>
+
+            <form class="login-form" id="login-form">
+                <div class="input-group">
+                    <label>Usuario</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="user-input" placeholder="Ingrese su DNI" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Clave</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password-input" placeholder="********" required>
+                        <div class="toggle-password-wrapper">
+                             <i class="ri-eye-line" id="toggle-password"></i>
+                        </div>
+                    </div>
+                    <div id="login-error" class="error-msg hidden">Credenciales incorrectas.</div>
+                </div>
+
+                <button type="submit" class="btn-login">Ingresar</button>
+                
+                <div class="forgot-container">
+                    <a href="#" class="forgot-pass">Olvidé mi contraseña</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Directory Card -->
+        <div class="info-card">
+            <div class="info-header">
+                <h2>Directorio Telefónico</h2>
+            </div>
+            <div class="directory-table">
+                <div class="table-header">
+                    <div class="th-1">Tienes duda sobre...</div>
+                    <div class="th-2">Comunícate con:</div>
+                </div>
+                <div class="table-row">
+                    <div class="col-1">
+                        <ul>
+                            <li>¿Cómo iniciar el trámite de bachiller?</li>
+                            <li>¿Requisitos para obtener el título profesional?</li>
+                            <li>¿Consultas sobre estado de expedientes?</li>
+                            <li>¿Dudas sobre el registro de proyectos de tesis?</li>
+                            <li>¿Cronograma de sustentaciones?</li>
+                        </ul>
+                    </div>
+                    <div class="col-2 contact-info">
+                        <strong>Unidad de Grados y Títulos</strong>
+                        <p>grados@unam.edu.pe</p>
+                        <p>ANEXO 405</p>
+                        <p>Celular: 953967519</p>
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="col-1">
+                        <ul>
+                            <li>¿Cómo subir mi tesis al repositorio institucional?</li>
+                            <li>¿Trámite de constancia de no adeudo de libros?</li>
+                        </ul>
+                    </div>
+                    <div class="col-2 contact-info">
+                        <strong>Biblioteca Central / Repositorio</strong>
+                        <ul>
+                            <li>Sede Moquegua: 964611430</li>
+                            <li>Filial Ilo: 989895105</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="table-row">
+                    <div class="col-1">
+                        <ul>
+                            <li>¿Designación de Asesores y Jurados?</li>
+                            <li>¿Revisión de plan de tesis?</li>
+                        </ul>
+                    </div>
+                    <div class="col-2 contact-info">
+                        <strong>Con tu Escuela Profesional:</strong>
+                        <ul style="font-size: 0.8rem;">
+                            <li>Gestión Pública y Desarrollo Social: 945650473</li>
+                            <li>Ingeniería de Minas: 945647065</li>
+                            <li>Ingeniería Agroindustrial: 945647154</li>
+                            <li>Ingeniería Civil: 923234699</li>
+                            <li>Ingeniería de Sistemas e Informática: 945649660</li>
+                            <li>Ingeniería Ambiental: 945647792</li>
+                        </ul>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        // Password Toggle
+        document.querySelector('.toggle-password-wrapper').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password-input');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('ri-eye-line');
+                icon.classList.add('ri-eye-off-line');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('ri-eye-off-line');
+                icon.classList.add('ri-eye-line');
+            }
+        });
+
+        // Login Logic
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const user = document.getElementById('user-input').value;
+            const pass = document.getElementById('password-input').value;
+            const errorMsg = document.getElementById('login-error');
+
+            // Get users from storage or seed default
+            let admins = JSON.parse(localStorage.getItem('nexus_users'));
+            if (!admins) {
+                admins = [{user: 'admin', pass: 'admin123', name: 'Administrador Principal'}];
+                localStorage.setItem('nexus_users', JSON.stringify(admins));
+            }
+
+            let students = JSON.parse(localStorage.getItem('nexus_students')) || [];
+
+            // Authentication Check
+            let currentUser = null;
+            let role = '';
+
+            // 1. Check Admins
+            const validAdmin = admins.find(u => u.user === user && u.pass === pass);
+            if (validAdmin) {
+                currentUser = validAdmin;
+                role = 'admin';
+            } else if (user === 'superuser' && pass === '123') {
+                // SUPERUSER STUDENT
+                currentUser = { 
+                    name: 'Super Usuario', 
+                    user: 'superuser', 
+                    code: 'SUPER-001',
+                    career: 'Ingeniería de Sistemas e Informática' // Default visual
+                };
+                role = 'student'; 
+
+                // --- AUTO ASSIGN LOGIC For Student ---
+                const allReqs = JSON.parse(localStorage.getItem('nexus_requests')) || [];
+                const requestExists = allReqs.find(r => 
+                    (r.studentCode === 'SUPER-001' || r.studentId === 'superuser') && 
+                    r.type === 'Designación de Asesor' && 
+                    r.status === 'approved'
+                );
+
+                if(!requestExists) {
+                    const newLinkRequest = {
+                        id: 'REQ-SUPER-LINK',
+                        studentName: 'Super Usuario',
+                        studentCode: 'SUPER-001',
+                        studentId: 'superuser',
+                        school: 'Ingeniería de Sistemas e Informática',
+                        type: 'Designación de Asesor',
+                        status: 'approved',
+                        date: new Date().toISOString(),
+                        details: {
+                            topic: 'Proyecto de Tesis Automatizado',
+                            line: 'Inteligencia Artificial',
+                            proposedAdvisorId: 'superac',
+                            schoolDesignates: false
+                        },
+                        designation: {
+                            advisorId: 'superac',
+                            advisorName: 'Super Asesor'
+                        }
+                    };
+                    allReqs.push(newLinkRequest);
+                    localStorage.setItem('nexus_requests', JSON.stringify(allReqs));
+                }
+                // ---------------------------------------- 
+            } else if (user === 'superac' && pass === '123') {
+                // SUPERUSER ADVISOR
+                currentUser = {
+                    id: 'superac',
+                    user: 'superac',
+                    name: 'Super Asesor',
+                    specialty: 'Especialidad',
+                    career: 'Ingeniería de Sistemas e Informática',
+                    status: 'inactive',
+                    type: 'Asesor'
+                };
+                role = 'advisor';
+
+                // --- AUTO ASSIGN LOGIC ---
+                // Ensure this advisor exists in local storage so it can be found by others
+                const savedAdvisors = JSON.parse(localStorage.getItem('nexus_advisors')) || [];
+                if(!savedAdvisors.find(a => a.user === 'superac')) {
+                    savedAdvisors.push({ ...currentUser, pass: '123' });
+                    localStorage.setItem('nexus_advisors', JSON.stringify(savedAdvisors));
+                }
+
+                // Ensure assignment with 'superuser' exists
+                const allReqs = JSON.parse(localStorage.getItem('nexus_requests')) || [];
+                // Check if there is already an approved designation between 'superuser' and 'superac'
+                const existingLink = allReqs.find(r => 
+                    r.studentCode === 'SUPER-001' && 
+                    r.type === 'Designación de Asesor' && 
+                    r.status === 'approved' &&
+                    r.designation && r.designation.advisorId === 'superac'
+                );
+
+                if(!existingLink) {
+                    // Create the link
+                    const newLinkRequest = {
+                        id: 'REQ-SUPER-LINK',
+                        studentName: 'Super Usuario',
+                        studentCode: 'SUPER-001',
+                        school: 'Ingeniería de Sistemas e Informática',
+                        type: 'Designación de Asesor',
+                        status: 'approved',
+                        date: new Date().toISOString(),
+                        details: {
+                            topic: 'Proyecto de Tesis Automatizado',
+                            line: 'Inteligencia Artificial',
+                            proposedAdvisorId: 'superac',
+                            schoolDesignates: false
+                        },
+                        designation: {
+                            advisorId: 'superac',
+                            advisorName: 'Super Asesor',
+                            docUrl: '#'
+                        }
+                    };
+                    allReqs.push(newLinkRequest);
+                    localStorage.setItem('nexus_requests', JSON.stringify(allReqs));
+                }
+                // -------------------------
+
+            } else {
+                // 2. Check Students
+                const validStudent = students.find(s => s.user === user && s.pass === pass);
+                if (validStudent) {
+                    currentUser = validStudent;
+                    role = 'student';
+                } else {
+                    // 3. Check Advisors
+                    const advisors = JSON.parse(localStorage.getItem('nexus_advisors')) || [];
+                    const validAdvisor = advisors.find(a => a.user === user && a.pass === pass);
+                    if (validAdvisor) {
+                        currentUser = validAdvisor;
+                        role = 'advisor';
+                    } else {
+                        // 4. Check Juries
+                        const juries = JSON.parse(localStorage.getItem('nexus_juries')) || [];
+                        const validJury = juries.find(j => j.user === user && j.pass === pass);
+                        if (validJury) {
+                            currentUser = validJury;
+                            role = 'jury';
+                        } else {
+                            // 5. Check Schools
+                            let schools = JSON.parse(localStorage.getItem('nexus_schools')) || [];
+                            const validSchool = schools.find(sch => sch.user === user && sch.pass === pass);
+                            if (validSchool) {
+                                currentUser = validSchool;
+                                role = 'school';
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (currentUser) {
+                localStorage.setItem('nexus_auth', 'true');
+                // Save session info with role
+                currentUser.role = role;
+                localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
+                window.location.href = 'index.html';
+            } else {
+                // Show error
+                errorMsg.classList.remove('hidden');
+                
+                // Temporary: hide after 3 seconds
+                setTimeout(() => {
+                    errorMsg.classList.add('hidden');
+                }, 3000);
+            }
+        });
+
+        // Hide error on input
+        document.getElementById('user-input').addEventListener('input', () => {
+             document.getElementById('login-error').classList.add('hidden');
+        });
+        document.getElementById('password-input').addEventListener('input', () => {
+             document.getElementById('login-error').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
+

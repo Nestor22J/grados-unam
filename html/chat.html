@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat | UNAM</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 140px);
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .chat-sidebar {
+            width: 300px;
+            border-right: 1px solid #eee;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+        .contact-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .contact-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .contact-item:hover, .contact-item.active {
+            background: #fff;
+            border-left: 4px solid #1a237e;
+        }
+        .contact-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center; 
+            justify-content: center;
+            font-weight: bold;
+            color: #555;
+        }
+        .contact-info {
+            flex: 1;
+        }
+        .contact-name { font-weight: 500; font-size: 0.95rem; }
+        .contact-role { font-size: 0.75rem; color: #777; }
+        
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+        }
+        .messages-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f7fb;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            position: relative;
+        }
+        .message.sent {
+            align-self: flex-end;
+            background: #1a237e;
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+        .message.received {
+            align-self: flex-start;
+            background: #fff;
+            color: #333;
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .msg-time {
+            font-size: 0.65rem;
+            opacity: 0.7;
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .input-area {
+            padding: 15px;
+            background: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+        .btn-send {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: #1a237e;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-send:hover { background: #0d47a1; }
+
+        .empty-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="brand-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="../img/logo.png" alt="UNAM" style="height: 45px; width: auto; margin-right: 8px;">
+                <span>UNAM</span>
+            </div>
+            <div class="app-version">
+                <span>Mensajería</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-nav">
+                <span id="header-user-name">Usuario</span>
+                <i class="ri-account-circle-line"></i>
+                <i class="ri-logout-box-r-line" id="btn-logout" title="Cerrar Sesión"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Will be populated dynamically based on role if needed, or static links -->
+            <!-- Will be populated dynamically based on role if needed, or static links -->
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" style="padding: 20px;">
+            
+            <!-- Access Warning (Hidden by default) -->
+            <div id="no-advisor-warning" class="empty-state hidden" style="text-align: center; padding: 4rem 2rem; background: white; border-radius: 8px;">
+                 <i class="ri-lock-2-line" style="font-size: 4rem; color: #ff9800; margin-bottom: 1rem; display: block;"></i>
+                 <h3 style="color: #333; margin-bottom: 10px;">Chat No Disponible</h3>
+                 <p style="color: #666; font-size: 1.1rem; max-width: 500px; margin: 0 auto;">
+                     Necesitas tener un asesor de tesis asignado para utilizar el sistema de mensajería.
+                 </p>
+                 <button onclick="window.location.href='student-requests.html'" class="btn-primary" style="margin-top: 20px;">
+                     Ir a Trámites
+                 </button>
+            </div>
+
+            <div class="chat-container" id="chat-interface">
+                <!-- Contacts -->
+                <div class="chat-sidebar">
+                    <div style="padding: 15px; border-bottom: 1px solid #eee; font-weight: bold; color: #555;">
+                        Contactos
+                    </div>
+                    <div class="contact-list" id="contact-list">
+                        <!-- JS injected -->
+                    </div>
+                </div>
+                
+                <!-- Messages -->
+                <div class="chat-main">
+                    <div class="chat-header hidden" id="chat-header">
+                        <div class="contact-avatar" id="header-avatar">?</div>
+                        <div class="contact-info">
+                            <div class="contact-name" id="header-name">Nombre</div>
+                            <div class="contact-role" id="header-role">Rol</div>
+                        </div>
+                    </div>
+
+                    <div class="messages-area" id="messages-area">
+                        <div class="empty-chat">
+                            <i class="ri-chat-smile-2-line" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                            <p>Selecciona un contacto para iniciar una conversación</p>
+                        </div>
+                    </div>
+
+                    <div class="input-area hidden" id="input-area">
+                        <input type="text" id="msg-input" placeholder="Escribe un mensaje...">
+                        <button class="btn-send" id="btn-send"><i class="ri-send-plane-fill"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Auth Logic
+        const currentUser = JSON.parse(localStorage.getItem('nexus_current_user'));
+        if(!currentUser) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('header-user-name').textContent = currentUser.name;
+        }
+
+        // Access Control (Student)
+        if(currentUser.role === 'student') {
+            let allRequests = JSON.parse(localStorage.getItem('nexus_requests')) || [];
+            
+             // AUTO-FIX: Ensure Superuser has connection
+            if ((currentUser.user === 'superuser' || currentUser.code === '2020123456') && !allRequests.some(r => r.studentCode === currentUser.code && r.type === 'Designación de Asesor')) {
+                 const seedReq = {
+                    id: 'REQ-SUPER-SEED',
+                    type: 'Designación de Asesor',
+                    status: 'approved',
+                    studentId: currentUser.user,
+                    studentCode: currentUser.code || '2020123456',
+                    studentName: currentUser.name,
+                    date: new Date().toISOString(),
+                    designation: {
+                        advisorId: 'superac',
+                        advisorName: 'Super Asesor'
+                    }
+                 };
+                 allRequests.push(seedReq);
+                 localStorage.setItem('nexus_requests', JSON.stringify(allRequests));
+            }
+
+            const hasApprovedAdvisor = allRequests.some(r => 
+                (r.studentId === (currentUser.code || currentUser.user) || r.studentCode === (currentUser.code || currentUser.user)) && 
+                r.type === 'Designación de Asesor' && 
+                r.status === 'approved'
+            );
+
+            const chatInterface = document.getElementById('chat-interface');
+            const warning = document.getElementById('no-advisor-warning');
+
+            if(!hasApprovedAdvisor) {
+                if(chatInterface) chatInterface.style.display = 'none';
+                if(warning) warning.classList.remove('hidden');
+            }
+        }
+        
+        document.getElementById('btn-logout').addEventListener('click', () => {
+             localStorage.removeItem('nexus_current_user');
+             window.location.href = 'login.html';
+        });
+
+        // Sidebar Logic (Reuse logic from app.js roughly)
+        const sidebar = document.getElementById('sidebar');
+        if(currentUser.role === 'student') {
+            sidebar.innerHTML += `
+                <a href="student-requests.html" class="nav-item"><i class="ri-file-list-3-line"></i><span>Solicitudes</span></a>
+                <a href="student-advisors.html" class="nav-item"><i class="ri-user-star-line"></i><span>Asesores</span></a>
+                <a href="student-kanban.html" class="nav-item"><i class="ri-artboard-line"></i><span>Tablero / Avance</span></a>
+                <a href="chat.html" class="nav-item active"><i class="ri-chat-1-line"></i><span>Mensajes</span></a>
+            `;
+        } else if (currentUser.role === 'advisor') {
+            sidebar.innerHTML += `
+                <a href="advisor-availability.html" class="nav-item"><i class="ri-calendar-check-line"></i><span>Disponibilidad</span></a>
+                <a href="advisor-requests.html" class="nav-item"><i class="ri-file-text-line"></i><span>Solicitudes / Cartas</span></a>
+                <a href="advisor-kanban.html" class="nav-item"><i class="ri-artboard-line"></i><span>Tablero / Avance</span></a>
+                <a href="chat.html" class="nav-item active"><i class="ri-chat-1-line"></i><span>Mensajes</span></a>
+            `;
+        }
+
+        // Chat Logic
+        let selectedContactId = null;
+        const messagesArea = document.getElementById('messages-area');
+        const contactList = document.getElementById('contact-list');
+        const chatHeader = document.getElementById('chat-header');
+        const inputArea = document.getElementById('input-area');
+        const msgInput = document.getElementById('msg-input');
+        const btnSend = document.getElementById('btn-send');
+
+        function loadContacts() {
+            contactList.innerHTML = '';
+            
+            // Define who I can chat with
+            let contacts = [];
+            const allRequests = JSON.parse(localStorage.getItem('nexus_requests')) || [];
+            const advisors = JSON.parse(localStorage.getItem('nexus_advisors')) || [];
+            
+            // 1. If I am Student -> I can chat with my Assigned Advisor
+            if(currentUser.role === 'student') {
+                const myAssignedReq = allRequests.find(r => 
+                    r.studentCode === currentUser.code && 
+                    r.type === 'Designación de Asesor' && 
+                    r.status === 'approved' &&
+                    r.designation && r.designation.advisorId
+                );
+
+                if(myAssignedReq) {
+                    // Find advisor details
+                    const advisor = advisors.find(a => a.user === myAssignedReq.designation.advisorId || a.id === myAssignedReq.designation.advisorId);
+                    if(advisor) {
+                        contacts.push({
+                            id: advisor.user || advisor.id,
+                            name: advisor.name,
+                            role: 'Asesor de Tesis'
+                        });
+                    }
+                }
+            }
+            // 2. If I am Advisor -> I can chat with Students assigned to me
+            else if(currentUser.role === 'advisor') {
+                 // Find all students assigned to me
+                 const myStudentsReq = allRequests.filter(r => 
+                    r.type === 'Designación de Asesor' && 
+                    r.status === 'approved' &&
+                    r.designation && (r.designation.advisorId === currentUser.user || r.designation.advisorId === currentUser.id)
+                );
+                
+                myStudentsReq.forEach(req => {
+                    contacts.push({
+                        id: req.studentCode || 'S-'+req.id, // Fallback ID
+                        name: req.studentName,
+                        role: 'Estudiante'
+                    });
+                });
+            }
+
+            // Render
+            if(contacts.length === 0) {
+                contactList.innerHTML = '<div style="padding:15px; color:#999; text-align:center;">No tienes contactos asignados.</div>';
+                return;
+            }
+
+            contacts.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'contact-item';
+                if(selectedContactId === c.id) item.classList.add('active');
+                
+                item.innerHTML = `
+                    <div class="contact-avatar">${c.name.charAt(0)}</div>
+                    <div class="contact-info">
+                        <div class="contact-name">${c.name}</div>
+                        <div class="contact-role">${c.role}</div>
+                    </div>
+                `;
+                item.onclick = () => selectContact(c);
+                contactList.appendChild(item);
+            });
+        }
+
+        function selectContact(contact) {
+            selectedContactId = contact.id;
+            
+            // Update Header
+            document.getElementById('header-name').textContent = contact.name;
+            document.getElementById('header-role').textContent = contact.role;
+            document.getElementById('header-avatar').textContent = contact.name.charAt(0);
+            
+            chatHeader.classList.remove('hidden');
+            inputArea.classList.remove('hidden');
+            
+            // Highlight
+            loadContacts(); // Re-render to update active class
+            
+            loadMessages();
+        }
+
+        function getMyId() {
+            if(currentUser.role === 'student') return currentUser.code || currentUser.user;
+            return currentUser.user || currentUser.id;
+        }
+
+        function loadMessages() {
+            if(!selectedContactId) return;
+            
+            const myId = getMyId();
+            const allMessages = JSON.parse(localStorage.getItem('nexus_messages')) || [];
+            
+            // Filter Conversation: (from ME to THEM) OR (from THEM to ME)
+            const conversation = allMessages.filter(m => 
+                (m.from === myId && m.to === selectedContactId) ||
+                (m.from === selectedContactId && m.to === myId)
+            ).sort((a,b) => new Date(a.date) - new Date(b.date));
+            
+            messagesArea.innerHTML = '';
+            
+            if(conversation.length === 0) {
+                messagesArea.innerHTML = '<div style="text-align:center; color:#999; margin-top:20px;">Inicio de conversación</div>';
+            }
+
+            conversation.forEach(m => {
+                const msgDiv = document.createElement('div');
+                const isMine = m.from === myId;
+                msgDiv.className = `message ${isMine ? 'sent' : 'received'}`;
+                
+                const time = new Date(m.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                msgDiv.innerHTML = `
+                    ${m.text}
+                    <div class="msg-time">${time}</div>
+                `;
+                messagesArea.appendChild(msgDiv);
+            });
+            
+            // Scroll to bottom
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function sendMessage() {
+            const text = msgInput.value.trim();
+            if(!text || !selectedContactId) return;
+            
+            const myId = getMyId();
+            
+            const newMsg = {
+                id: 'MSG-' + Date.now(),
+                from: myId,
+                to: selectedContactId,
+                text: text,
+                date: new Date().toISOString(),
+                read: false
+            };
+            
+            const allMessages = JSON.parse(localStorage.getItem('nexus_messages')) || [];
+            allMessages.push(newMsg);
+            localStorage.setItem('nexus_messages', JSON.stringify(allMessages));
+            
+            msgInput.value = '';
+            loadMessages();
+        }
+
+        btnSend.addEventListener('click', sendMessage);
+        msgInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') sendMessage();
+        });
+
+        // Loop to auto-update
+        setInterval(() => {
+            if(selectedContactId) loadMessages();
+        }, 3000);
+
+        // Init
+        loadContacts();
+
+    </script>
+</body>
+</html>
+

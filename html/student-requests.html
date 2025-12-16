@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes | UNAM</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/notifications.css">
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="brand-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="../img/logo.png" alt="UNAM" style="height: 45px; width: auto; margin-right: 8px;">
+                <span>UNAM</span>
+            </div>
+            <div class="app-version">
+                <span>Panel del Estudiante</span>
+            </div>
+        </div>
+        <div class="header-right">
+             <div class="header-actions">
+                 <!-- Notification Bell -->
+                 <div class="notification-wrapper">
+                     <i class="ri-notification-3-line notification-icon" id="btn-notifications"></i>
+                     <span class="badge-count">0</span>
+                     <!-- Dropdown -->
+                     <div class="notification-dropdown hidden" id="notification-dropdown">
+                        <div class="notif-header">
+                            <div class="notif-title">Notificaciones</div>
+                            <div class="notif-filters">
+                                <span class="filter-pill active" id="filter-all">Todas</span>
+                                <span class="filter-pill" id="filter-unread">No leídas</span>
+                            </div>
+                        </div>
+                        <div class="notif-list" id="notif-list"></div>
+                     </div>
+                 </div>
+            </div>
+            <div class="user-nav">
+                <span id="current-user-name">Estudiante</span>
+                <i class="ri-account-circle-line"></i>
+                <i class="ri-logout-box-r-line" id="btn-logout" style="cursor: pointer;" title="Cerrar Sesión"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="student-requests.html" class="nav-item active">
+                <i class="ri-file-list-3-line"></i>
+                <span>Solicitudes</span>
+            </a>
+            <a href="student-advisors.html" class="nav-item">
+                <i class="ri-user-star-line"></i>
+                <span>Asesores</span>
+            </a>
+            <a href="student-kanban.html" class="nav-item">
+                <i class="ri-artboard-line"></i>
+                <span>Tablero / Avance</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i class="ri-chat-1-line"></i>
+                <span>Mensajes</span>
+            </a>
+
+            <!-- Admin Links (Hidden by app.js for students) -->
+            <a href="schools.html" class="nav-item">
+                <i class="ri-building-line"></i>
+                <span>Escuelas</span>
+            </a>
+            <a href="jurados.html" class="nav-item">
+                <i class="ri-scales-3-line"></i>
+                <span>Jurados</span>
+            </a>
+            <a href="advisors.html" class="nav-item">
+                <i class="ri-user-star-line"></i>
+                <span>Gestionar Asesores</span>
+            </a>
+            <a href="students.html" class="nav-item">
+                <i class="ri-group-line"></i>
+                <span>Estudiantes</span>
+            </a>
+            <a href="admin.html" class="nav-item">
+                <i class="ri-admin-line"></i>
+                <span>Admin</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <section class="welcome-card" style="margin-bottom: 2rem;">
+                <div class="welcome-user">
+                    <h2>Mis Solicitudes</h2>
+                    <p>Gestiona y realiza seguimiento de tus trámites académicos.</p>
+                </div>
+            </section>
+
+            <!-- Requests Module -->
+            <section class="crud-section">
+                <div class="crud-header">
+                    <div class="crud-title">
+                        <i class="ri-file-text-line"></i>
+                        <span>Trámites Disponibles</span>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <!-- Solicitud 1 Card -->
+                    <div class="card" data-type="inicio" style="cursor: pointer; border-left: 4px solid #1a237e;">
+                        <div class="card-header">
+                            <span class="card-badge badge-design">Trámite</span>
+                            <i class="ri-arrow-right-line" style="color: #ccc;"></i>
+                        </div>
+                        <h3 class="card-title">Solicitud de Inicio de Trámite</h3>
+                        <p class="card-desc">Solicitud formal para iniciar el proceso de Grados y Títulos.</p>
+                        <div class="card-footer">
+                            <div class="status-indicator">
+                                <span class="status-dot status-pendiente"></span>
+                                <span>Disponible</span>
+                            </div>
+                            <button class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">
+                                Iniciar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Solicitud 2 Card: Designation of Advisor -->
+                    <div class="card" data-type="asesor" style="cursor: pointer; border-left: 4px solid #00695c;">
+                        <div class="card-header">
+                            <span class="card-badge badge-design" style="background: #e0f2f1; color: #00695c;">Trámite</span>
+                            <i class="ri-arrow-right-line" style="color: #ccc;"></i>
+                        </div>
+                        <h3 class="card-title">Propuesta / Designación de Asesor</h3>
+                        <p class="card-desc">Solicita la designación de un asesor o propón uno para tu proyecto.</p>
+                        <div class="card-footer">
+                            <div class="status-indicator">
+                                <span class="status-dot status-pendiente"></span>
+                                <span>Disponible</span>
+                            </div>
+                            <button class="btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">
+                                Iniciar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- FUT Modal -->
+    <div id="fut-modal-overlay" class="modal-overlay hidden">
+        <div class="modal" style="max-width: 800px; width: 95%;">
+            <div class="modal-header">
+                <h2 id="modal-title" style="font-size: 1.1rem; color: #1a237e;">Información Requerida</h2>
+                <button id="fut-modal-close" style="background:none; border:none; cursor:pointer;"><i class="ri-close-line" style="font-size:1.5rem;"></i></button>
+            </div>
+            
+            <div style="margin-bottom: 20px; background: #e3f2fd; padding: 10px; border-radius: 4px; color: #0d47a1; font-size: 0.9rem;">
+                <i class="ri-information-line"></i> Tienes que llenar el siguiente formulario para continuar con tu trámite.
+            </div>
+
+            <!-- FUT Form Structure -->
+            <div class="fut-container" style="border: 2px solid #333; padding: 20px; font-family: Arial, sans-serif; font-size: 0.8rem; overflow-y: auto; max-height: 70vh;">
+                
+                <!-- ENTITY HEADER -->
+                <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 15px;">
+                    <img src="../img/logo.png" alt="UNAM" style="height: 50px;">
+                    <div style="flex: 1; text-align: center; font-weight: bold; font-size: 1.2rem;">
+                        FORMULARIO ÚNICO DE TRÁMITE (FUT)
+                    </div>
+                </div>
+
+                <!-- I. SOLICITO -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #e0e0e0; padding: 4px; border: 1px solid #333; font-weight: bold; border-bottom: none;">I. SOLICITO:</div>
+                    <textarea id="fut-solicito" readonly style="width: 100%; border: 1px solid #333; padding: 5px; height: 40px; resize: none; background: #fff; font-family: inherit; font-size: 0.8rem; display: block;"></textarea>
+                    <select id="fut-advisor-select" class="hidden" style="width: 100%; border: 1px solid #333; border-top: none; padding: 5px; font-size: 0.8rem; background: #f8f9fa;">
+                        <option value="">-- Seleccionar Asesor (Opcional) --</option>
+                    </select>
+                </div>
+
+                <!-- II. DEPENDENCIA -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #e0e0e0; padding: 4px; border: 1px solid #333; font-weight: bold; border-bottom: none;">II. DEPENDENCIA O AUTORIDAD A QUIEN SE DIRIGE LA SOLICITUD:</div>
+                    <input type="text" style="width: 100%; border: 1px solid #333; padding: 5px;">
+                </div>
+
+                <!-- III. DERECHO DE TRÁMITE -->
+                <div style="margin-bottom: 10px; border: 1px solid #333;">
+                    <div style="background: #e0e0e0; padding: 4px; font-weight: bold; border-bottom: 1px solid #333;">III. DERECHO DE TRÁMITE (opcional)</div>
+                    <div style="display: flex;">
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="padding: 2px; text-align: center; font-size: 0.7rem;">N° COMPROBANTE DE PAGO</div>
+                            <input type="text" style="width: 100%; border:none; border-top: 1px solid #333; padding: 5px;">
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="padding: 2px; text-align: center; font-size: 0.7rem;">FECHA DE PAGO</div>
+                            <input type="date" style="width: 100%; border:none; border-top: 1px solid #333; padding: 5px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IV. DATOS DEL SOLICITANTE -->
+                <div style="margin-bottom: 10px; border: 1px solid #333;">
+                    <div style="background: #e0e0e0; padding: 4px; font-weight: bold; border-bottom: 1px solid #333;">IV. DATOS DEL SOLICITANTE:</div>
+                    
+                    <!-- PERSONA NATURAL -->
+                    <div style="background: #f5f5f5; padding: 2px 4px; font-weight: bold; border-bottom: 1px solid #333;">PERSONA NATURAL</div>
+                    <div style="display: flex; border-bottom: 1px solid #333;">
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">Apellido Paterno</div>
+                            <input type="text" style="width:100%; border:none; border-top:1px solid #333; padding:2px;">
+                        </div>
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">Apellido Materno</div>
+                            <input type="text" style="width:100%; border:none; border-top:1px solid #333; padding:2px;">
+                        </div>
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">Nombres</div>
+                            <input type="text" style="width:100%; border:none; border-top:1px solid #333; padding:2px;">
+                        </div>
+                        <div style="flex: 1; padding: 2px;">
+                            <div style="font-size: 0.7rem; text-align: center; margin-bottom: 2px;">DOCUMENTO DE IDENTIDAD</div>
+                            <div style="display: flex; justify-content: space-around; font-size: 0.7rem;">
+                                <span>DNI <input type="radio" name="doc-identity" value="DNI"></span>
+                                <span>CE <input type="radio" name="doc-identity" value="CE"></span>
+                            </div>
+                            <input type="text" placeholder="N° Documento" style="width:100%; margin-top: 2px; border: 1px solid #ccc;">
+                        </div>
+                    </div>
+
+                    <!-- PERSONA JURIDICA -->
+                    <div style="background: #f5f5f5; padding: 2px 4px; font-weight: bold; border-bottom: 1px solid #333;">PERSONA JURÍDICA (opcional)</div>
+                    <div style="display: flex; border-bottom: 1px solid #333;">
+                         <div style="flex: 3; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem;">Razón Social</div>
+                            <input type="text" style="width:100%; border:none; border-top:1px solid #ccc; padding:2px;">
+                         </div>
+                         <div style="flex: 1; padding: 2px;">
+                            <div style="font-size: 0.7rem;">RUC</div>
+                            <input type="text" style="width:100%; border:1px solid #ccc; padding:2px;">
+                         </div>
+                    </div>
+
+                    <!-- REPRESENTANTE LEGAL -->
+                     <div style="border-bottom: 1px solid #333; padding: 2px;">
+                        <div style="font-size: 0.7rem; font-weight: bold;">REPRESENTANTE LEGAL (ADJUNTAR DOCUMENTO QUE LO ACREDITE COMO TAL) (opcional)</div>
+                     </div>
+                     <div style="display: flex;">
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">Apellidos y Nombres</div>
+                            <input type="text" style="width:100%; border:none; border-top:1px solid #333; padding:2px;">
+                        </div>
+                        <div style="flex: 0.5; padding: 2px;">
+                             <div style="font-size: 0.7rem; text-align: center;">DNI</div>
+                             <input type="text" style="width:100%; border:1px solid #ccc; padding:2px;">
+                        </div>
+                     </div>
+                </div>
+
+                <!-- V. DIRECCION -->
+                <div style="margin-bottom: 10px; border: 1px solid #333;">
+                    <div style="background: #e0e0e0; padding: 4px; font-weight: bold; border-bottom: 1px solid #333;">V. DIRECCIÓN:</div>
+                    <div style="border-bottom: 1px solid #333;">
+                         <div style="font-size: 0.7rem; text-align: center;">DOMICILIO: AV./CALLE/JIRÓN / DPTO. / MZ. / LOTE / URB.</div>
+                         <input type="text" style="width:100%; border:none; border-top:1px solid #333; padding:4px;">
+                    </div>
+                    <div style="display: flex; border-bottom: 1px solid #333;">
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">DISTRITO</div>
+                            <input type="text" style="width:100%; border:none; border-top:1px solid #333; padding:2px;">
+                        </div>
+                        <div style="flex: 1; border-right: 1px solid #333;">
+                            <div style="font-size: 0.7rem; text-align: center;">PROVINCIA</div>
+                            <input type="text" style="width:100%; border:none; border-top:1px solid #333; padding:2px;">
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.7rem; text-align: center;">DEPARTAMENTO</div>
+                            <input type="text" style="width:100%; border:none; border-top:1px solid #333; padding:2px;">
+                        </div>
+                    </div>
+                     <div style="display: flex;">
+                        <div style="flex: 2; border-right: 1px solid #333; padding: 4px;">
+                            <span style="font-size: 0.7rem;">Autorizo se me notifique al siguiente correo electrónico:</span>
+                            <input type="email" style="width: 100%; border: 1px solid #ccc; margin-top: 2px;">
+                        </div>
+                        <div style="flex: 1; border-right: 1px solid #333; padding: 4px;">
+                            <span style="font-size: 0.7rem;">TELÉFONO:</span>
+                            <input type="text" style="width: 100%; border: 1px solid #ccc; margin-top: 2px;">
+                        </div>
+                        <div style="flex: 1; padding: 4px;">
+                            <span style="font-size: 0.7rem;">CELULAR:</span>
+                            <input type="text" style="width: 100%; border: 1px solid #ccc; margin-top: 2px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VI. FUNDAMENTACIÓN -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #e0e0e0; padding: 4px; border: 1px solid #333; font-weight: bold; border-bottom: none;">VI. FUNDAMENTACIÓN DE LA SOLICITUD (PETITORIO - Indicar en forma clara lo que se solicita):</div>
+                    <textarea style="width: 100%; border: 1px solid #333; padding: 5px; height: 80px; resize: none;"></textarea>
+                    
+                    <!-- ADVISOR SPECIAL FIELDS -->
+                    <div id="advisor-fields" class="hidden" style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px;">
+                         <label style="display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 0.8rem; background: #e0f2f1; padding: 5px;">
+                            <input type="checkbox" id="check-school-designate">
+                            Solicito que la Escuela Profesional me designe el Asesor
+                        </label>
+                    </div>
+                </div>
+
+                <!-- VII. DOCUMENTOS ADJUNTOS -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #e0e0e0; padding: 4px; border: 1px solid #333; font-weight: bold; border-bottom: none;">VII. DOCUMENTOS ADJUNTOS:</div>
+                    <div style="border: 1px solid #333; padding: 10px; display: flex; flex-direction: column; gap: 15px;">
+                        
+                        <!-- ADVISOR DOCS -->
+                        <div id="advisor-docs" class="hidden">
+                            <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;">1. Breve Explicación del Proyecto</div>
+                            <div style="font-size: 0.75rem; color: #444; margin-bottom: 5px;">Adjunte un archivo (PDF) describiendo brevemente su proyecto de tesis.</div>
+                            <input type="file" id="doc-project-desc" accept=".pdf">
+                        </div>
+
+                        <!-- STANDARD DOCS -->
+                        <div id="standard-docs">
+                            <div>
+                                <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;">1. Fotografías</div>
+                                <div style="font-size: 0.75rem; color: #444; margin-bottom: 5px;">De frente, tamaño pasaporte, a color, con traje formal y fondo blanco.</div>
+                                <input type="file" id="doc-photos" accept="image/*">
+                            </div>
+
+                            <div style="margin-top: 15px;">
+                                <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;">2. Constancias de Prácticas Preprofesionales</div>
+                                <div style="font-size: 0.75rem; color: #444; margin-bottom: 5px;">(Formato PDF)</div>
+                                <input type="file" id="doc-practices" accept=".pdf">
+                            </div>
+
+                            <div style="margin-top: 15px;">
+                                <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;">3. Certificado de Estudios del Idioma Inglés</div>
+                                <div style="font-size: 0.75rem; color: #444; margin-bottom: 5px;">(Formato PDF)</div>
+                                <input type="file" id="doc-english" accept=".pdf">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- VIII. FIRMA -->
+                <div style="margin-bottom: 10px;">
+                    <div style="background: #e0e0e0; padding: 4px; border: 1px solid #333; font-weight: bold; border-bottom: none;">VIII. FIRMA DEL SOLICITANTE:</div>
+                    <div style="border: 1px solid #333; padding: 10px; display: flex; flex-direction: column; gap: 5px;">
+                        <span style="font-size: 0.8rem;">Adjunte su firma digital o escaneada (Imagen/PDF):</span>
+                        <input type="file" id="fut-signature" accept="image/*,.pdf">
+                        
+                        <div style="margin-top: 10px; background: #fff3e0; padding: 8px; border: 1px dashed #ffb74d;">
+                            <label style="display: flex; gap: 10px; align-items: flex-start; cursor: pointer;">
+                                <input type="checkbox" id="signature-declaration" style="margin-top: 3px;">
+                                <span style="font-size: 0.8rem; line-height: 1.4; color: #e65100;">
+                                    <strong>DECLARACIÓN JURADA:</strong><br>
+                                    Declaro bajo juramento que la firma adjunta es auténtica y corresponde a mi persona. Soy consciente de que, en caso contrario o de detectarse irregularidades, el trámite será <strong>OBSERVADO</strong> y sujeto a las sanciones correspondientes.
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer" style="margin-top: 15px;">
+                <button type="button" class="btn-secondary" id="btn-fut-cancel">Cerrar</button>
+                <button type="button" class="btn-primary" id="btn-fut-submit">Enviar Solicitud</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span id="toast-msg">Operación exitosa</span>
+    </div>
+
+    <script src="../js/notifications.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/student-logic.js"></script>
+</body>
+</html>
+

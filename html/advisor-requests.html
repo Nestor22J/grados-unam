@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes y Cartas | Asesor UNAM</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="brand-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="../img/logo.png" alt="UNAM" style="height: 45px; width: auto; margin-right: 8px;">
+                <span>UNAM</span>
+            </div>
+            <div class="app-version">
+                <span>Panel de Asesor</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-nav">
+                <span id="header-user-name">Asesor</span>
+                <i class="ri-account-circle-line"></i>
+                <i class="ri-logout-box-r-line" id="btn-logout" title="Cerrar Sesión"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <a href="advisor-availability.html" class="nav-item">
+                <i class="ri-calendar-check-line"></i>
+                <span>Disponibilidad</span>
+            </a>
+            <a href="advisor-requests.html" class="nav-item active">
+                <i class="ri-file-text-line"></i>
+                <span>Solicitudes / Cartas</span>
+            </a>
+            <a href="advisor-kanban.html" class="nav-item">
+                <i class="ri-artboard-line"></i>
+                <span>Tablero / Avance</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i class="ri-chat-1-line"></i>
+                <span>Mensajes</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="welcome-card" style="border-top-color: #fdd835;">
+                <div class="welcome-text">
+                    <h2 style="color: #f57f17;">Bandeja de Designaciones</h2>
+                    <p>Aquí encontrarás las cartas de designación enviadas por la Escuela Profesional.</p>
+                </div>
+            </div>
+
+            <div class="controls-bar">
+                 <div class="search-box">
+                    <i class="ri-search-line"></i>
+                    <input type="text" id="req-search" placeholder="Buscar por estudiante...">
+                </div>
+            </div>
+
+            <!-- Requests Container -->
+            <div class="content-grid" id="requests-container">
+                 <!-- JavaScript will populate this -->
+            </div>
+
+            <div id="empty-state" class="empty-state hidden" style="text-align: center; padding: 3rem;">
+                <i class="ri-mail-open-line" style="font-size: 3rem; color: #ddd;"></i>
+                <p style="color: #999;">No tienes designaciones pendientes.</p>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Letter Modal -->
+    <div id="letter-modal" class="modal-overlay hidden" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000;">
+        <div class="modal-content" style="background: white; padding: 40px; border-radius: 8px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto;">
+             <div id="letter-body" style="font-family: 'Times New Roman', serif; color: black; line-height: 1.6;">
+             </div>
+             <div style="margin-top: 30px; text-align: right; border-top: 1px solid #eee; padding-top: 20px;">
+                 <button class="btn-secondary" style="background: #f5f5f5; border: 1px solid #ccc; padding: 8px 15px; margin-right: 10px; cursor: pointer;" onclick="closeLetterModal()">Cerrar</button>
+                 <button class="btn-primary" style="background: #1976d2; color: white; border: none; padding: 8px 15px; cursor: pointer;" onclick="approveStudent()">Aceptar Asesoría</button>
+             </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('nexus_current_user'));
+        if(!currentUser) {
+            window.location.href = 'login.html';
+        } else {
+             const headerName = document.getElementById('header-user-name');
+             if(headerName) headerName.textContent = currentUser.name;
+        }
+
+        const btnLogout = document.getElementById('btn-logout');
+        if(btnLogout) {
+            btnLogout.addEventListener('click', () => {
+                 localStorage.removeItem('nexus_current_user');
+                 window.location.href = 'login.html';
+            });
+        }
+
+        function loadDesignations() {
+            const allRequests = JSON.parse(localStorage.getItem('nexus_requests')) || [];
+            
+            // Filter: Type 'Designación de Asesor' + Status 'approved' + Matching Advisor
+            const myRequests = allRequests.filter(req => {
+                const advisorIds = [currentUser.user, currentUser.id, currentUser.code].filter(Boolean);
+                if(req.type === 'Designación de Asesor' && req.status === 'approved' && req.designation) {
+                     return advisorIds.includes(req.designation.advisorId) || req.designation.advisorId === 'superac'; // Robust + Demo
+                }
+                return false;
+            });
+
+            const container = document.getElementById('requests-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            container.innerHTML = '';
+            
+            if(myRequests.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            myRequests.forEach(req => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.borderLeft = '4px solid #fdd835';
+                card.style.padding = '15px';
+                card.style.marginBottom = '15px';
+                card.style.background = 'white';
+                card.style.borderRadius = '8px';
+                card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                
+                card.innerHTML = `
+                    <div class="card-header" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span class="card-badge" style="background: #fff9c4; color: #fbc02d; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem;">Carta de Designación</span>
+                        <i class="ri-mail-star-line" style="color: #ccc;"></i>
+                    </div>
+                    <h3 class="card-title" style="margin: 0 0 5px 0;">${req.studentName}</h3>
+                    <p class="card-desc" style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">
+                        <strong>Tema:</strong> ${req.designation.topic || 'Sin tema registrado'}<br>
+                        <span style="font-size: 0.8rem; color: #999;">${new Date(req.date || new Date()).toLocaleDateString()}</span>
+                    </p>
+                    <div class="card-footer" style="display: flex; align-items: center; justify-content: flex-end;">
+                        <button class="btn-primary" style="padding: 5px 10px; font-size: 0.8rem; background: #2196f3; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="viewLetter('${req.id}')">
+                            Ver Carta
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function viewLetter(id) {
+            const all = JSON.parse(localStorage.getItem('nexus_requests')) || [];
+            // Use loose equality to handle string/number ID differences
+            const req = all.find(r => r.id == id);
+            
+            if(!req) {
+                alert('No se pudo cargar la información de la carta (ID no encontrado).');
+                return;
+            }
+            
+            const modal = document.getElementById('letter-modal');
+            const body = document.getElementById('letter-body');
+            
+            body.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom: 2px solid #b32; padding-bottom: 15px;">
+                    <img src="../img/logo.png" style="height:80px;">
+                    <div style="text-align:center; font-family: 'Times New Roman', serif; color: #000;">
+                        <div style="font-size:1.2rem; font-weight:bold; color: #b32;">UNIVERSIDAD NACIONAL DE MOQUEGUA</div>
+                        <div style="font-size:0.9rem; font-weight:bold; margin-top: 5px;">VICEPRESIDENCIA ACADÉMICA</div>
+                        <div style="font-size:0.8rem; margin-top: 5px;">ESCUELA PROFESIONAL</div>
+                    </div>
+                    <img src="../img/logo.png" style="height:80px; opacity: 0;">
+                </div>
+                
+                <div style="text-align:right; margin-bottom: 40px; font-size: 1.1rem; font-family: 'Times New Roman', serif;">
+                    <strong>Moquegua, ${date}</strong>
+                </div>
+                
+                <div style="margin-bottom: 30px; font-size: 1.1rem; font-family: 'Times New Roman', serif;">
+                    <strong>Sr(a). Docente:</strong><br>
+                    <strong>${req.designation.advisorName || currentUser.name}</strong><br>
+                    <u>Presente.-</u>
+                </div>
+                
+                <div style="margin-bottom: 30px; font-size: 1.1rem; text-align: center; font-weight: bold; text-decoration: underline; font-family: 'Times New Roman', serif;">
+                    ASUNTO: DESIGNACIÓN DE ASESOR DE TESIS
+                </div>
+                
+                <div style="text-align: justify; margin-bottom: 50px; line-height: 1.6; font-size: 1.1rem; font-family: 'Times New Roman', serif;">
+                    De mi especial consideración:
+                    <br><br>
+                    Por intermedio del presente documento, saludo a Ud. y a la vez le comunico que mediante Resolución de Dirección de Escuela, se le ha <strong>DESIGNADO</strong> como <strong>ASESOR</strong> del Proyecto de Investigación del estudiante:
+                    <br><br>
+                    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; margin: 10px 0;">
+                        ${req.studentName}
+                    </div>
+                    <div style="text-align: center; margin-bottom: 10px;">(Código: ${req.studentCode || '---'})</div>
+                    <br>
+                    Con el título:
+                    <div style="text-align: center; font-style: italic; font-weight: bold; margin: 15px 0;">
+                        "${req.designation.topic || 'Tema por definir'}"
+                    </div>
+                    <br>
+                    Agradeciendo de antemano su importante apoyo a la investigación y formación profesional.
+                    <br><br>
+                    Atentamente,
+                </div>
+                
+                <div style="text-align: center; margin-top: 80px; font-family: 'Times New Roman', serif;">
+                    __________________________<br>
+                    <strong>DIRECTOR DE LA ESCUELA PROFESIONAL</strong><br>
+                    Universidad Nacional de Moquegua
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            // Ensure dataset is set for approval
+            modal.dataset.reqId = id;
+        }
+
+        function closeLetterModal() {
+            document.getElementById('letter-modal').classList.add('hidden');
+        }
+        
+        function approveStudent() {
+             const modal = document.getElementById('letter-modal');
+             const id = modal.dataset.reqId;
+             
+             // Visual Feedback
+             alert(`Has aceptado formalmente la asesoría estatutaria.`);
+             closeLetterModal();
+             
+             // Redirect to Kanban to start working?
+             if(confirm('¿Deseas ir al Tablero de Avance ahora?')) {
+                 window.location.href = 'advisor-kanban.html';
+             }
+        }
+
+        loadDesignations();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero Kanban | Asesor UNAM</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/kanban.css">
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="brand-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="../img/logo.png" alt="UNAM" style="height: 45px; width: auto; margin-right: 8px;">
+                <span>UNAM</span>
+            </div>
+            <div class="app-version">
+                <span>Panel del Asesor</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-nav">
+                <span id="current-user-name">Asesor</span>
+                <i class="ri-account-circle-line"></i>
+                <i class="ri-logout-box-r-line" id="btn-logout" style="cursor: pointer;" title="Cerrar Sesión"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <a href="advisor-availability.html" class="nav-item">
+                <i class="ri-calendar-check-line"></i>
+                <span>Disponibilidad</span>
+            </a>
+            <a href="advisor-requests.html" class="nav-item">
+                <i class="ri-file-text-line"></i>
+                <span>Solicitudes / Cartas</span>
+            </a>
+            <a href="advisor-kanban.html" class="nav-item active">
+                <i class="ri-artboard-line"></i>
+                <span>Tablero / Avance</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i class="ri-chat-1-line"></i>
+                <span>Mensajes</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <section class="welcome-card" style="margin-bottom: 2rem; border-top-color: #fdd835;">
+                <div class="welcome-user">
+                    <h2 style="color: #f57f17;">Tablero de Avance</h2>
+                    <p>Gestiona y supervisa el progreso de tus estudiantes asignados.</p>
+                </div>
+            </section>
+            
+            <!-- Advisor Info -->
+            <p id="advisor-watching-info" style="color: #666; font-style: italic; margin-bottom: 20px;"></p>
+
+            <!-- Kanban Board -->
+            <div class="kanban-board" id="kanban-board-container">
+                
+                <!-- Todo Column -->
+                <div class="kanban-column" id="col-todo">
+                    <div class="kanban-header todo">
+                        <span>Por Hacer</span>
+                        <button class="add-task-btn" data-col="todo" title="Agregar Tarea"><i class="ri-add-line"></i></button>
+                    </div>
+                    <div class="kanban-tasks" id="tasks-todo">
+                    </div>
+                </div>
+
+                <!-- In Progress Column -->
+                <div class="kanban-column" id="col-progress">
+                    <div class="kanban-header progress">
+                        <span>En Progreso</span>
+                        <button class="add-task-btn" data-col="progress" title="Agregar Tarea"><i class="ri-add-line"></i></button>
+                    </div>
+                    <div class="kanban-tasks" id="tasks-progress">
+                    </div>
+                </div>
+
+                <!-- Review Column -->
+                <div class="kanban-column" id="col-review">
+                    <div class="kanban-header review">
+                        <span>En Revisión</span>
+                        <button class="add-task-btn" data-col="review" title="Agregar Tarea"><i class="ri-add-line"></i></button>
+                    </div>
+                    <div class="kanban-tasks" id="tasks-review">
+                    </div>
+                </div>
+
+                <!-- Done Column -->
+                <div class="kanban-column" id="col-done">
+                    <div class="kanban-header done">
+                        <span>Hecho</span>
+                        <button class="add-task-btn" data-col="done" title="Agregar Tarea"><i class="ri-add-line"></i></button>
+                    </div>
+                    <div class="kanban-tasks" id="tasks-done">
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Task Modal (Equal to Student - No manual Injection) -->
+    <div id="task-modal" class="modal-overlay hidden">
+        <div class="modal-content large">
+            
+            <!-- Left: Details -->
+            <div class="modal-left">
+                <h3 style="margin-bottom: 20px;">Detalles de la Tarea</h3>
+                
+                <div class="form-group">
+                    <label>Título</label>
+                    <input type="text" id="task-title" class="form-control" placeholder="Título de la tarea">
+                </div>
+                
+                <div class="form-group">
+                    <label>Prioridad</label>
+                    <select id="task-priority" class="form-control">
+                        <option value="low">Baja</option>
+                        <option value="medium" selected>Media</option>
+                        <option value="high">Alta</option>
+                    </select>
+                </div>
+
+                <!-- JS will inject Student Assignment Here for Advisors -->
+
+                <div class="form-group" style="margin-top: 30px;">
+                    <label style="display: flex; justify-content: space-between;">
+                        Archivos Adjuntos
+                        <span style="font-size: 0.75rem; color: #999; font-weight: normal;">(Simulación PDF)</span>
+                    </label>
+                    <div class="attachment-list" id="task-files">
+                    </div>
+                    <label class="btn-upload-label">
+                        <i class="ri-upload-cloud-line"></i> Subir PDF
+                        <input type="file" id="task-file-input" accept=".pdf" style="display: none;">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Right: Activity -->
+            <div class="modal-right">
+                <div class="section-title">Comentarios y Actividad</div>
+                
+                <div class="comment-list" id="task-comments">
+                    <div style="text-align: center; color: #999; margin-top: 20px;">No hay comentarios aún.</div>
+                </div>
+
+                <div class="comment-input-area">
+                    <input type="text" id="task-comment-input" placeholder="Escribe un comentario...">
+                    <button class="btn-primary" id="btn-post-comment" style="padding: 0 15px;"><i class="ri-send-plane-fill"></i></button>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-secondary" id="close-task-modal">Cerrar</button>
+                    <button class="btn-primary" id="save-task-btn">Guardar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/kanban.js"></script>
+    <script>
+        // Init Check
+        const currentUser = JSON.parse(localStorage.getItem('nexus_current_user'));
+        if(!currentUser) window.location.href = 'login.html';
+        document.getElementById('current-user-name').textContent = currentUser.name;
+    </script>
+</body>
+</html>
+

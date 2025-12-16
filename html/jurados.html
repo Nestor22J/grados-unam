@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Jurados | UNAM</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/notifications.css">
+</head>
+<body>
+    
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="brand-logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+                <img src="../img/logo.png" alt="UNAM" style="height: 45px; width: auto; margin-right: 8px;">
+                <span>UNAM</span>
+            </div>
+            <div class="app-version">
+                <span>Panel Administrativo</span>
+            </div>
+        </div>
+        <div class="header-right">
+             <div class="header-actions">
+                 <!-- Notification Bell -->
+                 <div class="notification-wrapper">
+                     <i class="ri-notification-3-line notification-icon" id="btn-notifications"></i>
+                     <span class="badge-count">0</span>
+                     <!-- Dropdown -->
+                     <div class="notification-dropdown hidden" id="notification-dropdown">
+                        <div class="notif-header">
+                            <div class="notif-title">Notificaciones</div>
+                            <div class="notif-filters">
+                                <span class="filter-pill active" id="filter-all">Todas</span>
+                                <span class="filter-pill" id="filter-unread">No leídas</span>
+                            </div>
+                        </div>
+                        <div class="notif-list" id="notif-list"></div>
+                     </div>
+                 </div>
+            </div>
+            <div class="user-nav">
+                <span id="current-user-name">Administrador</span>
+                <i class="ri-account-circle-line"></i>
+                <i class="ri-logout-box-r-line" id="btn-logout" style="cursor: pointer;" title="Cerrar Sesión"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-body">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="schools.html" class="nav-item">
+                <i class="ri-building-line"></i>
+                <span>Escuelas</span>
+            </a>
+            <a href="jurados.html" class="nav-item active">
+                <i class="ri-scales-3-line"></i>
+                <span>Jurados</span>
+            </a>
+            <a href="advisors.html" class="nav-item">
+                <i class="ri-user-star-line"></i>
+                <span>Gestionar Asesores</span>
+            </a>
+            <a href="students.html" class="nav-item">
+                <i class="ri-group-line"></i>
+                <span>Estudiantes</span>
+            </a>
+            <a href="admin.html" class="nav-item">
+                <i class="ri-admin-line"></i>
+                <span>Admin</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <section class="welcome-card" style="margin-bottom: 2rem;">
+                <div class="welcome-user">
+                    <h2>Gestión de Jurados</h2>
+                    <p>Administra a los docentes que formarán parte de los jurados de tesis.</p>
+                </div>
+            </section>
+
+            <!-- Jury List Module -->
+            <section class="crud-section">
+                <div class="crud-header">
+                    <div class="crud-title">
+                        <i class="ri-scales-3-fill"></i>
+                        <span>Jurados Registrados</span>
+                    </div>
+                    <button id="btn-add-jury" class="btn-primary">
+                        <i class="ri-user-add-line"></i>
+                        <span>Nuevo Jurado</span>
+                    </button>
+                </div>
+
+                <div class="controls-bar">
+                    <div class="search-box">
+                        <i class="ri-search-line"></i>
+                        <input type="text" id="search-jury" placeholder="Buscar por nombre o DNI...">
+                    </div>
+                </div>
+
+                <div class="list-container" id="jury-container">
+                    <!-- Table Injected via JS -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modal for Add/Edit Jury -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Nuevo Jurado</h2>
+                <button id="modal-close" style="background:none; border:none; cursor:pointer;"><i class="ri-close-line" style="font-size:1.5rem;"></i></button>
+            </div>
+            <form id="jury-form">
+                <input type="hidden" id="jury-index"> 
+                
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="jury-name" placeholder="Ej. Mg. Soto" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Usuario / DNI</label>
+                    <input type="text" id="jury-user" placeholder="Ej. 708090" required>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <div style="position: relative;">
+                        <input type="password" id="jury-pass" placeholder="********" required style="padding-right: 35px;">
+                        <i class="ri-eye-line" id="toggle-jury-pass" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666;"></i>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span id="toast-msg">Operación exitosa</span>
+    </div>
+
+    <script src="../js/notifications.js"></script>
+    <script src="../js/jurados.js"></script>
+</body>
+</html>
+
