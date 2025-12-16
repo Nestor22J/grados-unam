@@ -305,7 +305,7 @@
                 // Save session info with role
                 currentUser.role = role;
                 localStorage.setItem('nexus_current_user', JSON.stringify(currentUser));
-                window.location.href = 'index.html';
+                window.location.href = '/index.html';
             } else {
                 // Show error
                 errorMsg.classList.remove('hidden');
